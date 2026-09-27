@@ -132,3 +132,222 @@ Apples/50/10
 📊 Your stock has been updated successfully!
 """)
 
+@dp.message(F.text == "📦 Склад")
+async def show_instractions(message:Message):
+    await message.answer("""
+📦 Warehouse Products
+
+📝 Command Format:
+/products warehouse_name
+
+💡 Example:
+/products MainWarehouse ✨
+
+🚀 Use the command above to view all products in your warehouse.
+
+""")
+
+@dp.message(Command("products"))
+async def show_all(message: Message , command:CommandObject):
+    sklad_name = command.args
+    if sklad_name is None:
+        await message.answer("""
+⚠️ Warehouse name is missing!
+
+Please enter the command in this format:
+
+📦 /products warehouse_name
+
+💡 Example:
+/products MainWarehouse
+
+✨ Please provide a warehouse name after the command.
+""")
+    else:
+        show = await products(message.from_user.id , sklad_name)
+        if show is None:
+            await message.answer("""
+📦 Your Warehouse Has No Products Yet!
+
+⚠️ There are currently no products in this warehouse.
+
+➕ Add a product to your warehouse to start managing your stock!
+""")
+        else:
+            text = "📦 Your Products:\n"
+            for i in show:
+                text += f"""
+🏷️ Product Name: {i['product_name']}
+🔢 Quantity: {i['quantity']}
+
+📊 Stock information displayed successfully!
+            """
+            await message.answer(f"{text}")
+
+@dp.message(Command("restock"))
+async def add_to_product(message:Message , command:CommandObject):
+    add_to_prd = command.args
+    if add_to_prd is None:
+        await message.answer("""
+⚠️ Invalid or missing information!
+
+Please enter the command in this format:
+
+📦 /restock product_name/adding_quantity/sklad_id
+
+💡 Example:
+/restock Coca-Cola/50/1
+
+✅ Make sure all three values are entered correctly.
+
+
+""")        
+    else:
+        add_to_prd = add_to_prd.split("/")
+        await restock(add_to_prd[0] , add_to_prd[1] , message.from_user.id , add_to_prd[2])
+        await message.answer(f"""
+✅ Quantity Updated Successfully!
+
+📦 Product: {add_to_prd[0]}
+🔢 The quantity has been updated successfully.
+""")
+
+@dp.message(Command("sell"))
+async def add_to_product(message:Message , command:CommandObject):
+    remove_from_prd = command.args
+    if remove_from_prd is None:
+        await message.answer("""
+⚠️ Invalid or missing information!
+
+Please enter the command in this format:
+
+📤 /sell product_name/removing_quantity/sklad_id
+
+💡 Example:
+/sell Coca-Cola/10/1
+
+✅ Make sure all three values are entered correctly.
+
+
+""")        
+    else:
+        remove_from_prd = remove_from_prd.split("/")
+        await sell(remove_from_prd[0] , remove_from_prd[1] , message.from_user.id , remove_from_prd[2])
+        await message.answer(f"""
+✅ Quantity Updated Successfully!
+
+📦 Product: {remove_from_prd[0]}
+
+📊 Your warehouse stock has been updated.
+
+""")
+
+@dp.message(F.text == "⚠️ Заканчивается")
+async def info_about_lf_func(message: Message):
+    await message.answer("""
+📉 Low Stock
+
+To check products with low stock, use the command:
+
+👉 /low_stock warehouse_name
+
+💡 Example:
+/low_stock MainWarehouse
+
+📦 Enter the name of the warehouse you want to check.
+""")
+
+
+@dp.message(Command("low_stock"))
+async def low_stk(message:Message , command:CommandObject):
+    get_sklad_name = command.args
+
+    if get_sklad_name is None:
+        await message.answer("""
+⚠️ Invalid or missing information!
+
+Please enter the command in this format:
+
+📉 /low_stock warehouse_name
+
+💡 Example:
+/low_stock MainWarehouse
+
+✅ Make sure to enter the warehouse name after the command.
+
+
+""")
+    else:
+        show_low_stock = await low_stock(message.from_user.id , get_sklad_name)
+        if len(show_low_stock) <= 0:
+            await message.answer("""
+📦 No Low-Stock Products
+
+✅ You don't have any products with a quantity below their low-stock threshold.
+
+📊 Your stock levels are currently sufficient!
+
+""")
+        else:
+            text = "⚠️ Low-Stock Products:\n"
+            for i in show_low_stock:
+                text += f"""
+📦 Product ID: {i['product_id']}
+🏷️ Product Name: {i['product_name']}
+🔢 Quantity: {i['quantity']}
+👤 Warehouse Owner Telegram ID: {i['tg_id']}
+🏢 Warehouse Name: {i['name']}\n
+            """    
+            text += "🚨 This product is below the low-stock threshold.\n"
+            await message.answer(f"{text}")
+
+@dp.message(Command("help"))
+async def help(message:Message):
+    await message.answer("""
+🤖 Warehouse Stock Manager — Help
+
+📦 Manage your warehouses and keep track of your inventory with ease!
+
+━━━━━━━━━━━━━━━━━━
+
+🚀 Basic Commands
+
+🔹 /start — Start the bot and open the main menu.
+
+🏢 /create_sklad — Create a new warehouse.
+
+📋 /see_sklads — View all your warehouses.
+
+➕ /add_product — Add a new product to a warehouse.
+
+📦 /products — View all products in a selected warehouse.
+
+🔄 /restock — Increase a product's quantity.
+
+📤 /sell — Decrease a product's quantity.
+
+⚠️ /low_stock — View products whose quantity is below their low-stock threshold.
+
+❓ /help — Show this help menu.
+
+━━━━━━━━━━━━━━━━━━
+
+📊 Keep your stock organized. Keep your business moving! 🚀
+""")
+
+@dp.message()
+async def wrong_message(message: Message):
+    await message.answer("""
+⚠️ Unknown Command
+
+I don't recognize that command or message. 🤔
+
+📋 Please use one of the available commands below:
+
+❓ /help — View all available commands
+🚀 /start — Start the bot
+
+💡 Tip: Make sure you enter a valid command beginning with /.
+
+""")
+
