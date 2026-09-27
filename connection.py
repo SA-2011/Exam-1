@@ -23,18 +23,29 @@ async def create_table():
     con = await connection()
     try:
         await con.execute("""
+
+        create table if not exists sklad(
+            sklad_id serial primary key,
+            name varchar(100),
+            creator varchar(100),
+            created_at timestamp default now(),
+            tg_id varchar
+        );
+
         create table if not exists products(
             product_id serial primary key,
             product_name varchar(100),
             quantity int,
-            low_stock_threshold text
+            tg_id varchar,
+            sklad_id int references sklad(sklad_id),
+            low_stock_threshold int
         );
         
         create table if not exists stock_movements(
             sm_id serial primary key,
             product_id int references products(product_id),
-            change varchar(5) check (change = '+ or change = '-'),
-            reason varchar(50) check (reason = 'restock' or reason = 'sell'),
+            change varchar(5) check(change = '+' or change = '-'),
+            reason varchar(50) check(reason = 'restock' or reason = 'sell'),
             created_at timestamp default now()
         );
         """)
