@@ -351,3 +351,10 @@ I don't recognize that command or message. 🤔
 
 """)
 
+async def main():
+    print("Bot started")
+    await create_table()
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
