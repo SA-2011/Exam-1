@@ -74,3 +74,61 @@ Please enter the warehouse name using this format:
 ✅ You can now start adding products and managing your stock.
 """)
 
+@dp.message(Command("see_sklads"))
+async def see_skl(message:Message):
+    show_skl = await see_my_sklads(message.from_user.id)
+    if show_skl is None:
+        await message.answer("""
+⚠️ You don't have any warehouses yet!
+
+📦 You can create one using the command:
+
+👉 /create_sklad warehouse_name
+
+💡 Example:
+/create_sklad Main Warehouse
+
+🚀 Create your first warehouse and start managing your stock!
+""")
+    else:
+        text = "📦 Your Warehouses:\n"
+        for i in show_skl:
+            text += f"""
+🏷️ Warehouse ID: {i['sklad_id']}
+📛 Warehouse Name: {i['name']}
+👤 Creator: {i['creator']}
+📅 Created At: {i['created_at']}
+🆔 Telegram ID: {i['tg_id']}\n
+        """  
+        await message.answer(f"{text}")
+
+
+@dp.message(Command("add_product"))
+async def add(message:Message , command:CommandObject):
+    product = command.args
+    if product is None:
+        await message.answer("""
+⚠️ Invalid format!
+
+Please enter the product information in this format after /add_product:
+
+📦 Product Name/Quantity/Low Stock Threshold/Sklad id
+
+📝 Example:
+Apples/50/10
+
+✅ Please make sure all 3 values are entered correctly.
+    """)
+    else:
+        product = product.split("/")
+        product[1] = int(product[1])
+        product[2] = int(product[2])
+        await add_product(product[0] , product[1] , product[2] , message.from_user.id , product[3])
+        await message.answer(f"""
+📦 Product Added Successfully!
+
+✅ {product[0]} has been added to your warehouse.
+
+📊 Your stock has been updated successfully!
+""")
+
