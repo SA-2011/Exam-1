@@ -314,19 +314,19 @@ async def help(message:Message):
 
 🔹 /start — Start the bot and open the main menu.
 
-🏢 /create_sklad — Create a new warehouse.
+🏢 /create_sklad — Create a new warehouse add it's nam ealso.
 
 📋 /see_sklads — View all your warehouses.
 
-➕ /add_product — Add a new product to a warehouse.
+➕ /add_product — Add a new product to a warehouse also add name/quantity/low stock threshold/Sklad id of product.
 
 📦 /products — View all products in a selected warehouse.
 
-🔄 /restock — Increase a product's quantity.
+🔄 /restock — Increase a product's quantity also add name/adding quantity/sklad id of product.
 
-📤 /sell — Decrease a product's quantity.
+📤 /sell — Decrease a product's quantity also add name/removing quantity/sklad id of product.
 
-⚠️ /low_stock — View products whose quantity is below their low-stock threshold.
+⚠️ /low_stock — View products whose quantity is below their low-stock threshold also add sklad name.
 
 ❓ /help — Show this help menu.
 
